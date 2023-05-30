@@ -4,9 +4,12 @@ import { FolderUp } from 'lucide-react'
 import { MediaPicker } from './MediaPicker'
 import { FormEvent } from 'react'
 import { api } from '@/lib/api'
-import { cookies } from 'next/headers'
+import Cookie from 'js-cookie'
+import { useRouter } from 'next/navigation'
 
 export function NewMemoryForm() {
+  const router = useRouter()
+
   async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -27,6 +30,8 @@ export function NewMemoryForm() {
       coverUrl = uploadResponse.data.fileUrl
     }
 
+    const token = Cookie.get('token')
+
     await api.post(
       '/memories',
       {
@@ -36,10 +41,12 @@ export function NewMemoryForm() {
       },
       {
         headers: {
-          Authorization: 'token',
+          Authorization: `Bearer ${token}`,
         },
       },
     )
+
+    router.push('/')
   }
 
   return (
